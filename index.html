@@ -4,36 +4,50 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#080808">
-  <title>HENDRA SYSTEM INTERFACE</title>
+
+  <title>HENDRA // FLASH SYSTEM</title>
+
   <style>
     :root {
       --bg: #080808;
-      --panel: rgba(18, 18, 18, .78);
+      --panel: rgba(18, 18, 18, 0.88);
       --red: #ff304f;
       --red-soft: #b51f38;
       --text: #f4f4f4;
       --muted: #8d8d8d;
-      --line: rgba(255, 48, 79, .25);
+      --line: rgba(255, 48, 79, 0.25);
+      --green: #00e676;
     }
 
-    * { box-sizing: border-box; }
-
-    html, body {
-      min-height: 100%;
+    * {
+      box-sizing: border-box;
       margin: 0;
+      padding: 0;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--bg);
     }
 
     body {
+      min-height: 100dvh;
+      padding: 16px;
       display: grid;
       place-items: center;
-      min-height: 100dvh;
-      padding: 24px;
-      overflow-x: hidden;
       color: var(--text);
       font-family: "Courier New", monospace;
       background:
-        radial-gradient(circle at 20% 15%, rgba(181, 31, 56, .18), transparent 34%),
-        radial-gradient(circle at 85% 80%, rgba(255, 48, 79, .10), transparent 30%),
+        radial-gradient(
+          circle at 20% 15%,
+          rgba(181, 31, 56, 0.18),
+          transparent 35%
+        ),
+        radial-gradient(
+          circle at 85% 80%,
+          rgba(255, 48, 79, 0.10),
+          transparent 30%
+        ),
         var(--bg);
     }
 
@@ -42,10 +56,13 @@
       position: fixed;
       inset: 0;
       pointer-events: none;
-      opacity: .12;
-      background-image: linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px);
-      background-size: 100% 4px;
-      mix-blend-mode: overlay;
+      opacity: 0.08;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(255, 255, 255, 0.1) 4px
+      );
     }
 
     .app {
@@ -54,70 +71,157 @@
       z-index: 1;
     }
 
-    .topbar, .panel {
-      border: 1px solid var(--line);
-      background: var(--panel);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      box-shadow: 0 20px 80px rgba(0,0,0,.35);
-    }
-
     .topbar {
       display: flex;
       justify-content: space-between;
-      gap: 16px;
-      padding: 12px 16px;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
       border-radius: 14px 14px 0 0;
+      background: var(--panel);
       color: var(--muted);
       font-size: 11px;
-      letter-spacing: 1.5px;
+      letter-spacing: 1px;
     }
 
-    .status { color: var(--red); }
+    .status {
+      color: var(--green);
+    }
 
     .panel {
-      padding: clamp(28px, 7vw, 64px);
-      border-top: 0;
-      border-radius: 0 0 14px 14px;
+      padding: clamp(24px, 6vw, 60px);
       text-align: center;
+      border: 1px solid var(--line);
+      border-top: none;
+      border-radius: 0 0 14px 14px;
+      background: var(--panel);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 20px 80px rgba(0, 0, 0, 0.4);
     }
 
     .symbol {
       font-size: clamp(64px, 16vw, 120px);
       color: var(--red);
       line-height: 1;
-      text-shadow: 0 0 24px rgba(255,48,79,.45);
+      text-shadow: 0 0 30px rgba(255, 48, 79, 0.6);
       animation: pulse 2.4s ease-in-out infinite;
     }
 
     h1 {
       margin: 24px 0 12px;
       font-size: clamp(24px, 6vw, 48px);
-      line-height: 1.15;
-      letter-spacing: .08em;
+      letter-spacing: 0.08em;
       overflow-wrap: anywhere;
-      text-shadow: 0 0 28px rgba(255,48,79,.25);
     }
 
     .subtitle {
-      margin: 0 auto;
-      max-width: 520px;
       color: var(--muted);
-      font-size: clamp(12px, 2.5vw, 15px);
+      font-size: 13px;
       line-height: 1.8;
     }
 
     .divider {
-      width: min(100%, 420px);
+      width: 100%;
       height: 1px;
       margin: 28px auto;
-      background: linear-gradient(90deg, transparent, var(--red), transparent);
-      opacity: .65;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        var(--red),
+        transparent
+      );
+    }
+
+    .flash-panel {
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.25);
+    }
+
+    .flash-icon {
+      font-size: 52px;
+      margin-bottom: 12px;
+      filter: drop-shadow(0 0 18px rgba(255, 48, 79, 0.4));
+    }
+
+    .flash-title {
+      color: var(--red);
+      font-size: 18px;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+
+    .flash-description {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .status-box {
+      margin-top: 18px;
+      padding: 12px;
+      border-radius: 8px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.03);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .status-box strong {
+      color: var(--red);
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 13px 20px;
+      color: var(--text);
+      background: rgba(255, 48, 79, 0.08);
+      font: inherit;
+      font-size: 12px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    button:hover,
+    button:focus-visible {
+      border-color: var(--red);
+      background: rgba(255, 48, 79, 0.2);
+      outline: none;
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.4;
+      transform: none;
+    }
+
+    .primary {
+      background: rgba(255, 48, 79, 0.2);
+      border-color: var(--red);
+    }
+
+    .danger {
+      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.04);
     }
 
     .meta {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 12px;
       margin-top: 24px;
       text-align: left;
@@ -125,9 +229,9 @@
 
     .meta-item {
       padding: 14px;
-      border: 1px solid rgba(255,255,255,.08);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 10px;
-      background: rgba(0,0,0,.2);
+      background: rgba(0, 0, 0, 0.2);
     }
 
     .label {
@@ -144,169 +248,462 @@
       overflow-wrap: anywhere;
     }
 
-    .actions {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 28px;
-    }
-
-    button {
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 11px 18px;
-      color: var(--text);
-      background: rgba(255,48,79,.08);
-      font: inherit;
-      font-size: 12px;
-      cursor: pointer;
-      transition: .2s ease;
-    }
-
-    button:hover, button:focus-visible {
-      background: rgba(255,48,79,.2);
-      border-color: var(--red);
-      outline: none;
-      transform: translateY(-1px);
-    }
-
     footer {
       margin-top: 14px;
       color: #555;
       font-size: 10px;
       text-align: center;
       letter-spacing: 1px;
+      line-height: 1.7;
     }
 
     @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: .8; }
-      50% { transform: scale(1.04); opacity: 1; }
+      0%, 100% {
+        transform: scale(1);
+        opacity: 0.8;
+      }
+
+      50% {
+        transform: scale(1.05);
+        opacity: 1;
+      }
     }
 
     @media (max-width: 420px) {
-      body { padding: 14px; }
-      .meta { grid-template-columns: 1fr; }
-      .topbar { font-size: 9px; }
+      .meta {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        font-size: 9px;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: .01ms !important;
-        transition-duration: .01ms !important;
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
       }
     }
   </style>
 </head>
+
 <body>
-  <main class="app" aria-label="System interface">
+
+  <main class="app">
+
     <header class="topbar">
-      <span>⛧ GEAAZETSU / UI</span>
-      <span class="status">● ONLINE</span>
+      <span>⛧ GEAAZETSU / FLASH</span>
+      <span class="status" id="systemStatus">● READY</span>
       <span id="clock">00:00:00</span>
     </header>
 
     <section class="panel">
+
       <div class="symbol" aria-hidden="true">⛧</div>
-      <h1>GEAAZETSU</h1>
+
+      <h1>HENDRASYSTEM</h1>
+
       <p class="subtitle">
-        Experimental interface dengan nuansa cyberpunk, efek visual halus,
-        dan tampilan responsif untuk desktop maupun perangkat seluler.
+        FLASHLIGHT CONTROL SYSTEM<br>
+        Experimental cyberpunk interface
       </p>
 
       <div class="divider"></div>
 
+      <section class="flash-panel">
+
+        <div class="flash-icon">🔦</div>
+
+        <div class="flash-title">
+          TORCH SIMULATION
+        </div>
+
+        <p class="flash-description">
+          Aktifkan akses kamera untuk mengendalikan
+          lampu senter perangkat.
+          <br>
+          Senter akan berkedip cepat selama simulasi aktif.
+        </p>
+
+        <div class="status-box">
+          STATUS:
+          <strong id="torchStatus">BELUM AKTIF</strong>
+          <br>
+          MODE:
+          <span id="modeStatus">STANDBY</span>
+        </div>
+
+        <div class="actions">
+
+          <button
+            class="primary"
+            id="startBtn"
+            type="button"
+          >
+            🔓 IZINKAN & MULAI
+          </button>
+
+          <button
+            class="danger"
+            id="stopBtn"
+            type="button"
+            disabled
+          >
+            ⏹ HENTIKAN
+          </button>
+
+        </div>
+
+      </section>
+
       <div class="meta">
+
         <div class="meta-item">
           <span class="label">DEVICE</span>
           <span class="value" id="device">Mendeteksi...</span>
         </div>
+
         <div class="meta-item">
           <span class="label">PLATFORM</span>
           <span class="value" id="platform">Mendeteksi...</span>
         </div>
+
         <div class="meta-item">
           <span class="label">DISPLAY</span>
           <span class="value" id="display">Mendeteksi...</span>
         </div>
+
         <div class="meta-item">
-          <span class="label">LOCAL TIME</span>
-          <span class="value" id="localTime">Mendeteksi...</span>
+          <span class="label">FLASH SUPPORT</span>
+          <span class="value" id="flashSupport">Belum diperiksa</span>
         </div>
+
       </div>
 
-      <div class="actions">
-        <button id="fullscreenBtn" type="button">Masuk Fullscreen</button>
-        <button id="motionBtn" type="button" aria-pressed="true">Matikan Animasi</button>
-      </div>
     </section>
 
-    <footer>LOCAL DEMO • TIDAK MENGIRIM DATA KE SERVER</footer>
+    <footer>
+      LOCAL DEMO • KONTROL SENTER PERANGKAT<br>
+      IZIN KAMERA DIGUNAKAN UNTUK AKSES TORCH
+    </footer>
+
   </main>
 
   <script>
     (() => {
       "use strict";
 
-      const $ = (selector) => document.querySelector(selector);
+      const $ = (selector) =>
+        document.querySelector(selector);
+
+      const startBtn = $("#startBtn");
+      const stopBtn = $("#stopBtn");
+      const torchStatus = $("#torchStatus");
+      const modeStatus = $("#modeStatus");
+      const systemStatus = $("#systemStatus");
+      const flashSupport = $("#flashSupport");
+
       const clock = $("#clock");
-      const localTime = $("#localTime");
-      const motionBtn = $("#motionBtn");
-      const fullscreenBtn = $("#fullscreenBtn");
 
-      const updateClock = () => {
+      let cameraStream = null;
+      let cameraTrack = null;
+      let strobeInterval = null;
+      let isRunning = false;
+      let flashState = false;
+
+      /*
+       * JAM DIGITAL
+       */
+
+      function updateClock() {
         const now = new Date();
-        const time = now.toLocaleTimeString("id-ID", { hour12: false });
-        clock.textContent = time;
-        localTime.textContent = time;
-      };
 
-      const detectEnvironment = () => {
+        clock.textContent =
+          now.toLocaleTimeString("id-ID", {
+            hour12: false
+          });
+      }
+
+      setInterval(updateClock, 1000);
+      updateClock();
+
+      /*
+       * INFORMASI PERANGKAT
+       */
+
+      function detectDevice() {
         const ua = navigator.userAgent;
-        const mobile = /Android|iPhone|iPad|iPod/i.test(ua);
 
-        $("#device").textContent = mobile ? "Mobile" : "Desktop";
-        $("#platform").textContent = navigator.platform || "Tidak tersedia";
+        const isMobile =
+          /Android|iPhone|iPad|iPod/i.test(ua);
+
+        $("#device").textContent =
+          isMobile ? "Mobile" : "Desktop";
+
+        $("#platform").textContent =
+          navigator.platform || "Unknown";
+
         $("#display").textContent =
           `${window.innerWidth} × ${window.innerHeight}px`;
-      };
+      }
 
-      fullscreenBtn.addEventListener("click", async () => {
-        try {
-          if (!document.fullscreenElement) {
-            await document.documentElement.requestFullscreen();
-            fullscreenBtn.textContent = "Keluar Fullscreen";
-          } else {
-            await document.exitFullscreen();
-            fullscreenBtn.textContent = "Masuk Fullscreen";
-          }
-        } catch {
-          fullscreenBtn.textContent = "Fullscreen tidak tersedia";
+      detectDevice();
+
+      window.addEventListener(
+        "resize",
+        detectDevice
+      );
+
+      /*
+       * MENGAKSES KAMERA UNTUK TORCH
+       *
+       * Kamera hanya digunakan untuk mendapatkan
+       * akses lampu senter. Tidak ada pengambilan
+       * gambar atau perekaman video.
+       */
+
+      async function requestTorch() {
+
+        if (
+          !navigator.mediaDevices ||
+          !navigator.mediaDevices.getUserMedia
+        ) {
+          throw new Error(
+            "Browser tidak mendukung akses kamera."
+          );
         }
-      });
 
-      motionBtn.addEventListener("click", () => {
-        const reduced = document.body.classList.toggle("reduce-motion");
-        document.documentElement.style.setProperty(
-          "--motion-state", reduced ? "paused" : "running"
-        );
-        document.querySelectorAll("*").forEach((element) => {
-          element.style.animationPlayState = reduced ? "paused" : "running";
+        cameraStream =
+          await navigator.mediaDevices.getUserMedia({
+            video: {
+              facingMode: {
+                ideal: "environment"
+              }
+            },
+            audio: false
+          });
+
+        cameraTrack =
+          cameraStream.getVideoTracks()[0];
+
+        if (!cameraTrack) {
+          throw new Error(
+            "Kamera tidak tersedia."
+          );
+        }
+
+        const capabilities =
+          cameraTrack.getCapabilities();
+
+        if (!capabilities.torch) {
+          throw new Error(
+            "Perangkat atau browser tidak mendukung torch."
+          );
+        }
+
+        flashSupport.textContent =
+          "DIDUKUNG";
+
+        return true;
+      }
+
+      /*
+       * MENGATUR STATUS SENTER
+       */
+
+      async function setTorch(state) {
+
+        if (!cameraTrack) {
+          return;
+        }
+
+        await cameraTrack.applyConstraints({
+          advanced: [
+            {
+              torch: state
+            }
+          ]
         });
-        motionBtn.textContent = reduced ? "Aktifkan Animasi" : "Matikan Animasi";
-        motionBtn.setAttribute("aria-pressed", String(!reduced));
-      });
 
-      document.addEventListener("fullscreenchange", () => {
-        fullscreenBtn.textContent =
-          document.fullscreenElement ? "Keluar Fullscreen" : "Masuk Fullscreen";
-      });
+        flashState = state;
+      }
 
-      window.addEventListener("resize", detectEnvironment);
-      updateClock();
-      detectEnvironment();
-      setInterval(updateClock, 1000);
+      /*
+       * MEMULAI KEDIPAN SENTER
+       */
+
+      function startStrobe() {
+
+        if (strobeInterval) {
+          clearInterval(strobeInterval);
+        }
+
+        /*
+         * Interval 150 ms:
+         * sekitar 3–4 perubahan per detik.
+         */
+
+        strobeInterval =
+          setInterval(async () => {
+
+            if (!cameraTrack || !isRunning) {
+              return;
+            }
+
+            try {
+              await setTorch(!flashState);
+            } catch (error) {
+              stopStrobe();
+            }
+
+          }, 150);
+      }
+
+      /*
+       * MENGHENTIKAN SENTER
+       */
+
+      async function stopStrobe() {
+
+        isRunning = false;
+
+        if (strobeInterval) {
+          clearInterval(strobeInterval);
+          strobeInterval = null;
+        }
+
+        if (cameraTrack) {
+          try {
+            await setTorch(false);
+          } catch (error) {
+            console.warn(error);
+          }
+        }
+
+        if (cameraStream) {
+          cameraStream.getTracks().forEach(
+            track => track.stop()
+          );
+        }
+
+        cameraStream = null;
+        cameraTrack = null;
+        flashState = false;
+
+        torchStatus.textContent =
+          "NONAKTIF";
+
+        modeStatus.textContent =
+          "STANDBY";
+
+        systemStatus.textContent =
+          "● READY";
+
+        systemStatus.style.color =
+          "var(--green)";
+
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+      }
+
+      /*
+       * TOMBOL MULAI
+       */
+
+      startBtn.addEventListener(
+        "click",
+        async () => {
+
+          startBtn.disabled = true;
+
+          torchStatus.textContent =
+            "MEMINTA IZIN...";
+
+          modeStatus.textContent =
+            "REQUESTING CAMERA";
+
+          try {
+
+            await requestTorch();
+
+            isRunning = true;
+
+            torchStatus.textContent =
+              "AKTIF";
+
+            modeStatus.textContent =
+              "FAST STROBE";
+
+            systemStatus.textContent =
+              "● RUNNING";
+
+            systemStatus.style.color =
+              "var(--red)";
+
+            stopBtn.disabled = false;
+
+            /*
+             * Menyalakan senter terlebih dahulu.
+             */
+
+            await setTorch(true);
+
+            startStrobe();
+
+          } catch (error) {
+
+            console.error(error);
+
+            torchStatus.textContent =
+              "GAGAL";
+
+            modeStatus.textContent =
+              error.message;
+
+            flashSupport.textContent =
+              "TIDAK TERSEDIA";
+
+            await stopStrobe();
+
+          }
+
+        }
+      );
+
+      /*
+       * TOMBOL HENTIKAN
+       */
+
+      stopBtn.addEventListener(
+        "click",
+        stopStrobe
+      );
+
+      /*
+       * MEMBERSIHKAN AKSES SAAT HALAMAN DITUTUP
+       */
+
+      window.addEventListener(
+        "pagehide",
+        () => {
+
+          if (strobeInterval) {
+            clearInterval(strobeInterval);
+          }
+
+          if (cameraStream) {
+            cameraStream.getTracks().forEach(
+              track => track.stop()
+            );
+          }
+
+        }
+      );
+
     })();
   </script>
+
 </body>
   </html>
