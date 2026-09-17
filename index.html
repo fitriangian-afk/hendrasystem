@@ -1,709 +1,829 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#080808">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050505">
+<meta name="description" content="GEAAZETSU Android Security Lab">
+<title>GEAAZETSU // Android Security Lab</title>
 
-  <title>HENDRA // FLASH SYSTEM</title>
+<style>
+:root {
+    --red: #ff1744;
+    --red-dark: #8b001f;
+    --green: #00ff9d;
+    --yellow: #ffe600;
+    --blue: #00b7ff;
+    --bg: #050505;
+    --panel: #0b0b0f;
+    --border: #292929;
+    --text: #e7e7e7;
+    --muted: #858585;
+}
 
-  <style>
-    :root {
-      --bg: #080808;
-      --panel: rgba(18, 18, 18, 0.88);
-      --red: #ff304f;
-      --red-soft: #b51f38;
-      --text: #f4f4f4;
-      --muted: #8d8d8d;
-      --line: rgba(255, 48, 79, 0.25);
-      --green: #00e676;
-    }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      min-height: 100%;
-      background: var(--bg);
-    }
-
-    body {
-      min-height: 100dvh;
-      padding: 16px;
-      display: grid;
-      place-items: center;
-      color: var(--text);
-      font-family: "Courier New", monospace;
-      background:
-        radial-gradient(
-          circle at 20% 15%,
-          rgba(181, 31, 56, 0.18),
-          transparent 35%
-        ),
-        radial-gradient(
-          circle at 85% 80%,
-          rgba(255, 48, 79, 0.10),
-          transparent 30%
-        ),
+body {
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at top right, rgba(255, 0, 50, .12), transparent 35%),
+        radial-gradient(circle at bottom left, rgba(0, 255, 157, .06), transparent 30%),
         var(--bg);
+    color: var(--text);
+    font-family: "Courier New", monospace;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 999;
+    background:
+        linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
+    background-size: 4px 4px;
+    mix-blend-mode: screen;
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+button:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 3px;
+}
+
+.app {
+    width: 100%;
+    max-width: 1500px;
+    margin: auto;
+    padding: 18px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    padding: 18px;
+    border: 1px solid var(--red-dark);
+    background: linear-gradient(135deg, #13070b, #090909);
+    box-shadow: 0 0 25px rgba(255, 0, 50, .08);
+    margin-bottom: 18px;
+}
+
+.logo {
+    color: var(--red);
+    font-size: clamp(18px, 4vw, 30px);
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-shadow: 0 0 12px rgba(255, 23, 68, .7);
+}
+
+.subtitle {
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 6px;
+}
+
+.status-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--green);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.status-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 12px var(--green);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: .3;
+    }
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: 230px 1fr;
+    gap: 18px;
+}
+
+.sidebar {
+    border: 1px solid var(--border);
+    background: rgba(10, 10, 12, .9);
+    padding: 12px;
+    height: fit-content;
+    position: sticky;
+    top: 18px;
+}
+
+.sidebar-title {
+    color: var(--red);
+    font-size: 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+}
+
+.nav-button {
+    width: 100%;
+    display: block;
+    text-align: left;
+    color: var(--muted);
+    background: transparent;
+    border: 1px solid transparent;
+    padding: 12px;
+    margin-bottom: 7px;
+    transition: .2s;
+}
+
+.nav-button:hover,
+.nav-button.active {
+    color: white;
+    border-color: var(--red-dark);
+    background: rgba(255, 23, 68, .1);
+}
+
+.nav-button.active {
+    box-shadow: inset 3px 0 0 var(--red);
+}
+
+.content {
+    min-width: 0;
+}
+
+.page {
+    display: none;
+    animation: fadeIn .25s ease;
+}
+
+.page.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.page-title {
+    font-size: 22px;
+    color: var(--red);
+    margin-bottom: 7px;
+}
+
+.page-description {
+    color: var(--muted);
+    font-size: 12px;
+    margin-bottom: 18px;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 13px;
+    margin-bottom: 18px;
+}
+
+.card {
+    background: linear-gradient(145deg, #111116, #080808);
+    border: 1px solid var(--border);
+    padding: 16px;
+    min-width: 0;
+}
+
+.card h3 {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: normal;
+    margin-bottom: 12px;
+}
+
+.card .value {
+    color: var(--green);
+    font-size: 22px;
+    overflow-wrap: anywhere;
+}
+
+.panel {
+    background: linear-gradient(145deg, #101014, #080808);
+    border: 1px solid var(--border);
+    padding: 18px;
+    margin-bottom: 18px;
+}
+
+.panel-title {
+    color: var(--red);
+    font-size: 13px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.info-item {
+    border: 1px solid #1c1c1c;
+    padding: 12px;
+    background: #08080a;
+}
+
+.info-label {
+    color: var(--muted);
+    font-size: 10px;
+    margin-bottom: 7px;
+}
+
+.info-value {
+    color: var(--text);
+    font-size: 12px;
+    overflow-wrap: anywhere;
+}
+
+.action-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.btn {
+    padding: 11px 15px;
+    border: 1px solid var(--red);
+    color: white;
+    background: rgba(255, 23, 68, .12);
+    transition: .2s;
+}
+
+.btn:hover {
+    background: var(--red);
+    color: #000;
+    box-shadow: 0 0 18px rgba(255, 23, 68, .4);
+}
+
+.btn.green {
+    border-color: var(--green);
+    background: rgba(0, 255, 157, .08);
+}
+
+.btn.green:hover {
+    background: var(--green);
+    color: #000;
+}
+
+.btn.blue {
+    border-color: var(--blue);
+    background: rgba(0, 183, 255, .08);
+}
+
+.btn.blue:hover {
+    background: var(--blue);
+    color: #000;
+}
+
+.btn:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+}
+
+.console {
+    min-height: 230px;
+    max-height: 360px;
+    overflow-y: auto;
+    background: #020202;
+    border: 1px solid #202020;
+    padding: 13px;
+    color: var(--green);
+    font-size: 12px;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.console-line {
+    margin-bottom: 3px;
+}
+
+.console-line.warning {
+    color: var(--yellow);
+}
+
+.console-line.error {
+    color: var(--red);
+}
+
+.console-line.info {
+    color: var(--blue);
+}
+
+.terminal-input-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.terminal-input {
+    flex: 1;
+    min-width: 0;
+    padding: 12px;
+    color: var(--green);
+    background: #020202;
+    border: 1px solid #252525;
+    outline: none;
+}
+
+.terminal-input:focus {
+    border-color: var(--green);
+}
+
+.camera-container {
+    position: relative;
+    background: #000;
+    border: 1px solid #282828;
+    min-height: 230px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+#cameraPreview {
+    width: 100%;
+    max-height: 450px;
+    object-fit: contain;
+    display: none;
+}
+
+.camera-placeholder {
+    color: var(--muted);
+    font-size: 12px;
+    text-align: center;
+    padding: 25px;
+}
+
+.torch-light {
+    width: 150px;
+    height: 150px;
+    margin: 20px auto;
+    border-radius: 50%;
+    background: #080808;
+    border: 1px solid #222;
+    box-shadow: 0 0 0 transparent;
+    transition: .08s;
+}
+
+.torch-light.on {
+    background: white;
+    box-shadow:
+        0 0 30px white,
+        0 0 70px white,
+        0 0 120px rgba(255, 255, 255, .8);
+}
+
+.torch-status {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    margin-bottom: 15px;
+}
+
+.permission-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #202020;
+    padding: 14px 0;
+}
+
+.permission-item:last-child {
+    border-bottom: none;
+}
+
+.permission-name {
+    color: white;
+    font-size: 12px;
+}
+
+.permission-description {
+    color: var(--muted);
+    font-size: 10px;
+    margin-top: 5px;
+}
+
+.badge {
+    padding: 5px 8px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+.badge.safe {
+    color: var(--green);
+    border-color: var(--green);
+}
+
+.badge.warning {
+    color: var(--yellow);
+    border-color: var(--yellow);
+}
+
+.audit-result {
+    border-left: 3px solid var(--green);
+    background: rgba(0, 255, 157, .05);
+    padding: 13px;
+    margin-bottom: 10px;
+    font-size: 12px;
+}
+
+.audit-result.warning {
+    border-color: var(--yellow);
+    background: rgba(255, 230, 0, .05);
+}
+
+.footer {
+    text-align: center;
+    color: #444;
+    font-size: 10px;
+    padding: 22px 0 5px;
+}
+
+@media (max-width: 850px) {
+    .layout {
+        grid-template-columns: 1fr;
     }
 
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      opacity: 0.08;
-      background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 3px,
-        rgba(255, 255, 255, 0.1) 4px
-      );
+    .sidebar {
+        position: static;
     }
 
+    .nav-button {
+        display: inline-block;
+        width: auto;
+        margin-right: 5px;
+    }
+
+    .cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 520px) {
     .app {
-      width: min(100%, 720px);
-      position: relative;
-      z-index: 1;
+        padding: 10px;
     }
 
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 10px;
-      padding: 14px 16px;
-      border: 1px solid var(--line);
-      border-radius: 14px 14px 0 0;
-      background: var(--panel);
-      color: var(--muted);
-      font-size: 11px;
-      letter-spacing: 1px;
+    .header {
+        align-items: flex-start;
+        flex-direction: column;
     }
 
-    .status {
-      color: var(--green);
+    .cards,
+    .info-grid {
+        grid-template-columns: 1fr;
     }
 
     .panel {
-      padding: clamp(24px, 6vw, 60px);
-      text-align: center;
-      border: 1px solid var(--line);
-      border-top: none;
-      border-radius: 0 0 14px 14px;
-      background: var(--panel);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      box-shadow: 0 20px 80px rgba(0, 0, 0, 0.4);
+        padding: 13px;
     }
 
-    .symbol {
-      font-size: clamp(64px, 16vw, 120px);
-      color: var(--red);
-      line-height: 1;
-      text-shadow: 0 0 30px rgba(255, 48, 79, 0.6);
-      animation: pulse 2.4s ease-in-out infinite;
+    .torch-light {
+        width: 115px;
+        height: 115px;
     }
-
-    h1 {
-      margin: 24px 0 12px;
-      font-size: clamp(24px, 6vw, 48px);
-      letter-spacing: 0.08em;
-      overflow-wrap: anywhere;
-    }
-
-    .subtitle {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.8;
-    }
-
-    .divider {
-      width: 100%;
-      height: 1px;
-      margin: 28px auto;
-      background: linear-gradient(
-        90deg,
-        transparent,
-        var(--red),
-        transparent
-      );
-    }
-
-    .flash-panel {
-      padding: 20px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: rgba(0, 0, 0, 0.25);
-    }
-
-    .flash-icon {
-      font-size: 52px;
-      margin-bottom: 12px;
-      filter: drop-shadow(0 0 18px rgba(255, 48, 79, 0.4));
-    }
-
-    .flash-title {
-      color: var(--red);
-      font-size: 18px;
-      font-weight: bold;
-      letter-spacing: 2px;
-    }
-
-    .flash-description {
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.7;
-    }
-
-    .status-box {
-      margin-top: 18px;
-      padding: 12px;
-      border-radius: 8px;
-      color: var(--muted);
-      background: rgba(255, 255, 255, 0.03);
-      font-size: 12px;
-      line-height: 1.7;
-    }
-
-    .status-box strong {
-      color: var(--red);
-    }
-
-    .actions {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 24px;
-    }
-
-    button {
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 13px 20px;
-      color: var(--text);
-      background: rgba(255, 48, 79, 0.08);
-      font: inherit;
-      font-size: 12px;
-      cursor: pointer;
-      transition: 0.2s ease;
-    }
-
-    button:hover,
-    button:focus-visible {
-      border-color: var(--red);
-      background: rgba(255, 48, 79, 0.2);
-      outline: none;
-      transform: translateY(-1px);
-    }
-
-    button:disabled {
-      cursor: not-allowed;
-      opacity: 0.4;
-      transform: none;
-    }
-
-    .primary {
-      background: rgba(255, 48, 79, 0.2);
-      border-color: var(--red);
-    }
-
-    .danger {
-      border-color: rgba(255, 255, 255, 0.15);
-      background: rgba(255, 255, 255, 0.04);
-    }
-
-    .meta {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin-top: 24px;
-      text-align: left;
-    }
-
-    .meta-item {
-      padding: 14px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 10px;
-      background: rgba(0, 0, 0, 0.2);
-    }
-
-    .label {
-      display: block;
-      margin-bottom: 6px;
-      color: var(--red-soft);
-      font-size: 10px;
-      letter-spacing: 1.5px;
-    }
-
-    .value {
-      color: var(--text);
-      font-size: 12px;
-      overflow-wrap: anywhere;
-    }
-
-    footer {
-      margin-top: 14px;
-      color: #555;
-      font-size: 10px;
-      text-align: center;
-      letter-spacing: 1px;
-      line-height: 1.7;
-    }
-
-    @keyframes pulse {
-      0%, 100% {
-        transform: scale(1);
-        opacity: 0.8;
-      }
-
-      50% {
-        transform: scale(1.05);
-        opacity: 1;
-      }
-    }
-
-    @media (max-width: 420px) {
-      .meta {
-        grid-template-columns: 1fr;
-      }
-
-      .topbar {
-        font-size: 9px;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
-        animation-duration: 0.01ms !important;
-      }
-    }
-  </style>
+}
+</style>
 </head>
 
 <body>
+<div class="app">
 
-  <main class="app">
-
-    <header class="topbar">
-      <span>⛧ GEAAZETSU / FLASH</span>
-      <span class="status" id="systemStatus">● READY</span>
-      <span id="clock">00:00:00</span>
-    </header>
-
-    <section class="panel">
-
-      <div class="symbol" aria-hidden="true">⛧</div>
-
-      <h1>HENDRASYSTEM</h1>
-
-      <p class="subtitle">
-        FLASHLIGHT CONTROL SYSTEM<br>
-        Experimental cyberpunk interface
-      </p>
-
-      <div class="divider"></div>
-
-      <section class="flash-panel">
-
-        <div class="flash-icon">🔦</div>
-
-        <div class="flash-title">
-          TORCH SIMULATION
+    <header class="header">
+        <div>
+            <div class="logo">GEAAZETSU // ASL</div>
+            <div class="subtitle">
+                ANDROID SECURITY LAB — TRANSPARENT SIMULATION ENVIRONMENT
+            </div>
         </div>
-
-        <p class="flash-description">
-          Aktifkan akses kamera untuk mengendalikan
-          lampu senter perangkat.
-          <br>
-          Senter akan berkedip cepat selama simulasi aktif.
-        </p>
 
         <div class="status-box">
-          STATUS:
-          <strong id="torchStatus">BELUM AKTIF</strong>
-          <br>
-          MODE:
-          <span id="modeStatus">STANDBY</span>
+            <span class="status-dot"></span>
+            SYSTEM ONLINE
         </div>
-
-        <div class="actions">
-
-          <button
-            class="primary"
-            id="startBtn"
-            type="button"
-          >
-            🔓 IZINKAN & MULAI
-          </button>
-
-          <button
-            class="danger"
-            id="stopBtn"
-            type="button"
-            disabled
-          >
-            ⏹ HENTIKAN
-          </button>
-
-        </div>
-
-      </section>
-
-      <div class="meta">
-
-        <div class="meta-item">
-          <span class="label">DEVICE</span>
-          <span class="value" id="device">Mendeteksi...</span>
-        </div>
-
-        <div class="meta-item">
-          <span class="label">PLATFORM</span>
-          <span class="value" id="platform">Mendeteksi...</span>
-        </div>
-
-        <div class="meta-item">
-          <span class="label">DISPLAY</span>
-          <span class="value" id="display">Mendeteksi...</span>
-        </div>
-
-        <div class="meta-item">
-          <span class="label">FLASH SUPPORT</span>
-          <span class="value" id="flashSupport">Belum diperiksa</span>
-        </div>
-
-      </div>
-
-    </section>
-
-    <footer>
-      LOCAL DEMO • KONTROL SENTER PERANGKAT<br>
-      IZIN KAMERA DIGUNAKAN UNTUK AKSES TORCH
-    </footer>
-
-  </main>
-
-  <script>
-    (() => {
-      "use strict";
-
-      const $ = (selector) =>
-        document.querySelector(selector);
-
-      const startBtn = $("#startBtn");
-      const stopBtn = $("#stopBtn");
-      const torchStatus = $("#torchStatus");
-      const modeStatus = $("#modeStatus");
-      const systemStatus = $("#systemStatus");
-      const flashSupport = $("#flashSupport");
-
-      const clock = $("#clock");
-
-      let cameraStream = null;
-      let cameraTrack = null;
-      let strobeInterval = null;
-      let isRunning = false;
-      let flashState = false;
-
-      /*
-       * JAM DIGITAL
-       */
-
-      function updateClock() {
-        const now = new Date();
-
-        clock.textContent =
-          now.toLocaleTimeString("id-ID", {
-            hour12: false
-          });
-      }
-
-      setInterval(updateClock, 1000);
-      updateClock();
-
-      /*
-       * INFORMASI PERANGKAT
-       */
-
-      function detectDevice() {
-        const ua = navigator.userAgent;
-
-        const isMobile =
-          /Android|iPhone|iPad|iPod/i.test(ua);
-
-        $("#device").textContent =
-          isMobile ? "Mobile" : "Desktop";
-
-        $("#platform").textContent =
-          navigator.platform || "Unknown";
-
-        $("#display").textContent =
-          `${window.innerWidth} × ${window.innerHeight}px`;
-      }
-
-      detectDevice();
-
-      window.addEventListener(
-        "resize",
-        detectDevice
-      );
-
-      /*
-       * MENGAKSES KAMERA UNTUK TORCH
-       *
-       * Kamera hanya digunakan untuk mendapatkan
-       * akses lampu senter. Tidak ada pengambilan
-       * gambar atau perekaman video.
-       */
-
-      async function requestTorch() {
-
-        if (
-          !navigator.mediaDevices ||
-          !navigator.mediaDevices.getUserMedia
-        ) {
-          throw new Error(
-            "Browser tidak mendukung akses kamera."
-          );
-        }
-
-        cameraStream =
-          await navigator.mediaDevices.getUserMedia({
-            video: {
-              facingMode: {
-                ideal: "environment"
-              }
-            },
-            audio: false
-          });
-
-        cameraTrack =
-          cameraStream.getVideoTracks()[0];
-
-        if (!cameraTrack) {
-          throw new Error(
-            "Kamera tidak tersedia."
-          );
-        }
-
-        const capabilities =
-          cameraTrack.getCapabilities();
-
-        if (!capabilities.torch) {
-          throw new Error(
-            "Perangkat atau browser tidak mendukung torch."
-          );
-        }
-
-        flashSupport.textContent =
-          "DIDUKUNG";
-
-        return true;
-      }
-
-      /*
-       * MENGATUR STATUS SENTER
-       */
-
-      async function setTorch(state) {
-
-        if (!cameraTrack) {
-          return;
-        }
-
-        await cameraTrack.applyConstraints({
-          advanced: [
-            {
-              torch: state
-            }
-          ]
-        });
-
-        flashState = state;
-      }
-
-      /*
-       * MEMULAI KEDIPAN SENTER
-       */
-
-      function startStrobe() {
-
-        if (strobeInterval) {
-          clearInterval(strobeInterval);
-        }
-
-        /*
-         * Interval 150 ms:
-         * sekitar 3–4 perubahan per detik.
-         */
-
-        strobeInterval =
-          setInterval(async () => {
-
-            if (!cameraTrack || !isRunning) {
-              return;
-            }
-
-            try {
-              await setTorch(!flashState);
-            } catch (error) {
-              stopStrobe();
-            }
-
-          }, 150);
-      }
-
-      /*
-       * MENGHENTIKAN SENTER
-       */
-
-      async function stopStrobe() {
-
-        isRunning = false;
-
-        if (strobeInterval) {
-          clearInterval(strobeInterval);
-          strobeInterval = null;
-        }
-
-        if (cameraTrack) {
-          try {
-            await setTorch(false);
-          } catch (error) {
-            console.warn(error);
-          }
-        }
-
-        if (cameraStream) {
-          cameraStream.getTracks().forEach(
-            track => track.stop()
-          );
-        }
-
-        cameraStream = null;
-        cameraTrack = null;
-        flashState = false;
-
-        torchStatus.textContent =
-          "NONAKTIF";
-
-        modeStatus.textContent =
-          "STANDBY";
-
-        systemStatus.textContent =
-          "● READY";
-
-        systemStatus.style.color =
-          "var(--green)";
-
-        startBtn.disabled = false;
-        stopBtn.disabled = true;
-      }
-
-      /*
-       * TOMBOL MULAI
-       */
-
-      startBtn.addEventListener(
-        "click",
-        async () => {
-
-          startBtn.disabled = true;
-
-          torchStatus.textContent =
-            "MEMINTA IZIN...";
-
-          modeStatus.textContent =
-            "REQUESTING CAMERA";
-
-          try {
-
-            await requestTorch();
-
-            isRunning = true;
-
-            torchStatus.textContent =
-              "AKTIF";
-
-            modeStatus.textContent =
-              "FAST STROBE";
-
-            systemStatus.textContent =
-              "● RUNNING";
-
-            systemStatus.style.color =
-              "var(--red)";
-
-            stopBtn.disabled = false;
-
-            /*
-             * Menyalakan senter terlebih dahulu.
-             */
-
-            await setTorch(true);
-
-            startStrobe();
-
-          } catch (error) {
-
-            console.error(error);
-
-            torchStatus.textContent =
-              "GAGAL";
-
-            modeStatus.textContent =
-              error.message;
-
-            flashSupport.textContent =
-              "TIDAK TERSEDIA";
-
-            await stopStrobe();
-
-          }
-
-        }
-      );
-
-      /*
-       * TOMBOL HENTIKAN
-       */
-
-      stopBtn.addEventListener(
-        "click",
-        stopStrobe
-      );
-
-      /*
-       * MEMBERSIHKAN AKSES SAAT HALAMAN DITUTUP
-       */
-
-      window.addEventListener(
-        "pagehide",
-        () => {
-
-          if (strobeInterval) {
-            clearInterval(strobeInterval);
-          }
-
-          if (cameraStream) {
-            cameraStream.getTracks().forEach(
-              track => track.stop()
-            );
-          }
-
-        }
-      );
-
-    })();
-  </script>
-
-</body>
-  </html>
+    </header>
+
+    <div class="layout">
+
+        <aside class="sidebar">
+            <div class="sidebar-title">// MODULES</div>
+
+            <button class="nav-button active" data-page="dashboard">
+                [01] Dashboard
+            </button>
+
+            <button class="nav-button" data-page="device">
+                [02] Device Info
+            </button>
+
+            <button class="nav-button" data-page="torch">
+                [03] Torch Lab
+            </button>
+
+            <button class="nav-button" data-page="camera">
+                [04] Camera Lab
+            </button>
+
+            <button class="nav-button" data-page="terminal">
+                [05] Terminal
+            </button>
+
+            <button class="nav-button" data-page="permissions">
+                [06] Permission Lab
+            </button>
+
+            <button class="nav-button" data-page="network">
+                [07] Network Lab
+            </button>
+
+            <button class="nav-button" data-page="security">
+                [08] Security Audit
+            </button>
+
+            <button class="nav-button" data-page="settings">
+                [09] Settings
+            </button>
+        </aside>
+
+        <main class="content">
+
+            <!-- DASHBOARD -->
+            <section class="page active" id="dashboard">
+                <h1 class="page-title">SYSTEM DASHBOARD</h1>
+                <p class="page-description">
+                    Ringkasan lingkungan perangkat dan modul simulasi.
+                </p>
+
+                <div class="cards">
+                    <div class="card">
+                        <h3>SYSTEM STATUS</h3>
+                        <div class="value">ONLINE</div>
+                    </div>
+
+                    <div class="card">
+                        <h3>PLATFORM</h3>
+                        <div class="value" id="dashboardPlatform">-</div>
+                    </div>
+
+                    <div class="card">
+                        <h3>DISPLAY</h3>
+                        <div class="value" id="dashboardDisplay">-</div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-title">// ACTIVITY LOG</div>
+                    <div class="console" id="dashboardLog"></div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-title">// QUICK ACTIONS</div>
+                    <div class="action-row">
+                        <button class="btn green" onclick="navigateTo('torch')">
+                            OPEN TORCH LAB
+                        </button>
+
+                        <button class="btn blue" onclick="navigateTo('device')">
+                            VIEW DEVICE INFO
+                        </button>
+
+                        <button class="btn" onclick="runSecurityAudit()">
+                            RUN SECURITY AUDIT
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DEVICE INFO -->
+            <section class="page" id="device">
+                <h1 class="page-title">DEVICE INFORMATION</h1>
+                <p class="page-description">
+                    Informasi yang tersedia melalui Web API browser.
+                </p>
+
+                <div class="panel">
+                    <div class="panel-title">// DEVICE DATA</div>
+
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">USER AGENT</div>
+                            <div class="info-value" id="userAgent">-</div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-label">PLATFORM</div>
+                            <div class="info-value" id="platform">-</div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-label">LANGUAGE</div>
+                            <div class="info-value" id="language">-</div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-label">SCREEN</div>
+                            <div class="info-value" id="screenInfo">-</div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-label">VIEWPORT</div>
+                            <div class="info-value" id="viewportInfo">-</div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-label">COOKIES ENABLED</div>
+                            <div class="info-value" id="cookiesInfo">-</div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-label">ONLINE STATUS</div>
+                            <div class="info-value" id="onlineInfo">-</div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-label">CORES LOGICAL</div>
+                            <div class="info-value" id="coresInfo">-</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TORCH LAB -->
+            <section class="page" id="torch">
+                <h1 class="page-title">TORCH LAB</h1>
+                <p class="page-description">
+                    Menguji kontrol lampu kilat kamera jika browser dan perangkat mendukungnya.
+                </p>
+
+                <div class="panel">
+                    <div class="panel-title">// FLASHLIGHT SIMULATION</div>
+
+                    <div class="torch-light" id="torchLight"></div>
+
+                    <div class="torch-status" id="torchStatus">
+                        Status: belum terhubung ke kamera.
+                    </div>
+
+                    <div class="action-row">
+                        <button class="btn green" id="startTorch">
+                            IZINKAN & MULAI
+                        </button>
+
+                        <button class="btn" id="stopTorch" disabled>
+                            MATIKAN
+                        </button>
+
+                        <button class="btn blue" id="strobeTorch" disabled>
+                            STROBE
+                        </button>
+                    </div>
+
+                    <br>
+
+                    <div class="console" id="torchLog"></div>
+                </div>
+            </section>
+
+            <!-- CAMERA LAB -->
+            <section class="page" id="camera">
+                <h1 class="page-title">CAMERA LAB</h1>
+                <p class="page-description">
+                    Preview kamera hanya ditampilkan setelah izin diberikan. Tidak ada pengambilan foto otomatis.
+                </p>
+
+                <div class="panel">
+                    <div class="panel-title">// TRANSPARENT CAMERA PREVIEW</div>
+
+                    <div class="camera-container">
+                        <video id="cameraPreview" autoplay playsinline muted></video>
+
+                        <div class="camera-placeholder" id="cameraPlaceholder">
+                            CAMERA PREVIEW NONAKTIF<br>
+                            Tekan tombol di bawah untuk memberikan izin.
+                        </div>
+                    </div>
+
+                    <br>
+
+                    <div class="action-row">
+                        <button class="btn green" id="startCamera">
+                            AKTIFKAN PREVIEW
+                        </button>
+
+                        <button class="btn" id="stopCamera" disabled>
+                            HENTIKAN PREVIEW
+                        </button>
+                    </div>
+
+                    <br>
+
+                    <div class="console" id="cameraLog"></div>
+                </div>
+            </section>
+
+            <!-- TERMINAL -->
+            <section class="page" id="terminal">
+                <h1 class="page-title">SIMULATED TERMINAL</h1>
+                <p class="page-description">
+                    Terminal lokal simulasi. Perintah tidak dijalankan pada sistem operasi.
+                </p>
+
+                <div class="panel">
+                    <div class="panel-title">// LOCAL CONSOLE</div>
+
+                    <div class="console" id="terminalOutput"></div>
+
+                    <div class="terminal-input-row">
+                        <input
+                            class="terminal-input"
+                            id="terminalInput"
+                            type="text"
+                            autocomplete="off"
+                            placeholder="ketik help..."
+                        >
+
+                        <button class="btn green" id="terminalRun">
+                            RUN
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PERMISSIONS -->
+            <section class="page" id="permissions">
+                <h1 class="page-title">PERMISSION LAB</h1>
+                <p class="page-description">
+                    Pemeriksaan status izin browser secara transparan.
+                </p>
+
+                <div class="panel">
+                    <div class="panel-title">// BROWSER PERMISSIONS</div>
+
+                    <div class="permission-item">
+                        <div>
+                            <div class="permission-name">Camera</div>
+                            <div class="permission-description">
+                                Digunakan untuk preview kamera dan fitur torch.
+                            </div>
+                        </div>
+                        <span class="badge" id="cameraPermission">UNKNOWN</span>
+                    </div>
+
+                    <div class="permission-item">
+                        <div>
+                            <div class="permission-name">Geolocation</div>
+                            <div class="permission-description">
+                                Tidak digunakan oleh aplikasi ini.
+                            </div>
+                        </div>
+                        <span class="badge safe">NOT USED</span>
+                    </div>
+
+                    <div class="permission-item">
+                        <div>
+                            <div class="permission-name">Microphone</div>
+                            <div class="permission-description">
+                                Tidak digunakan oleh apli
