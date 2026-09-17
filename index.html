@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080808">
+  <title>HENDRA SYSTEM INTERFACE</title>
+  <style>
+    :root {
+      --bg: #080808;
+      --panel: rgba(18, 18, 18, .78);
+      --red: #ff304f;
+      --red-soft: #b51f38;
+      --text: #f4f4f4;
+      --muted: #8d8d8d;
+      --line: rgba(255, 48, 79, .25);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      min-height: 100%;
+      margin: 0;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      min-height: 100dvh;
+      padding: 24px;
+      overflow-x: hidden;
+      color: var(--text);
+      font-family: "Courier New", monospace;
+      background:
+        radial-gradient(circle at 20% 15%, rgba(181, 31, 56, .18), transparent 34%),
+        radial-gradient(circle at 85% 80%, rgba(255, 48, 79, .10), transparent 30%),
+        var(--bg);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .12;
+      background-image: linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px);
+      background-size: 100% 4px;
+      mix-blend-mode: overlay;
+    }
+
+    .app {
+      width: min(100%, 720px);
+      position: relative;
+      z-index: 1;
+    }
+
+    .topbar, .panel {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 20px 80px rgba(0,0,0,.35);
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 16px;
+      border-radius: 14px 14px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 1.5px;
+    }
+
+    .status { color: var(--red); }
+
+    .panel {
+      padding: clamp(28px, 7vw, 64px);
+      border-top: 0;
+      border-radius: 0 0 14px 14px;
+      text-align: center;
+    }
+
+    .symbol {
+      font-size: clamp(64px, 16vw, 120px);
+      color: var(--red);
+      line-height: 1;
+      text-shadow: 0 0 24px rgba(255,48,79,.45);
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+
+    h1 {
+      margin: 24px 0 12px;
+      font-size: clamp(24px, 6vw, 48px);
+      line-height: 1.15;
+      letter-spacing: .08em;
+      overflow-wrap: anywhere;
+      text-shadow: 0 0 28px rgba(255,48,79,.25);
+    }
+
+    .subtitle {
+      margin: 0 auto;
+      max-width: 520px;
+      color: var(--muted);
+      font-size: clamp(12px, 2.5vw, 15px);
+      line-height: 1.8;
+    }
+
+    .divider {
+      width: min(100%, 420px);
+      height: 1px;
+      margin: 28px auto;
+      background: linear-gradient(90deg, transparent, var(--red), transparent);
+      opacity: .65;
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 24px;
+      text-align: left;
+    }
+
+    .meta-item {
+      padding: 14px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 10px;
+      background: rgba(0,0,0,.2);
+    }
+
+    .label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--red-soft);
+      font-size: 10px;
+      letter-spacing: 1.5px;
+    }
+
+    .value {
+      color: var(--text);
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 11px 18px;
+      color: var(--text);
+      background: rgba(255,48,79,.08);
+      font: inherit;
+      font-size: 12px;
+      cursor: pointer;
+      transition: .2s ease;
+    }
+
+    button:hover, button:focus-visible {
+      background: rgba(255,48,79,.2);
+      border-color: var(--red);
+      outline: none;
+      transform: translateY(-1px);
+    }
+
+    footer {
+      margin-top: 14px;
+      color: #555;
+      font-size: 10px;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: .8; }
+      50% { transform: scale(1.04); opacity: 1; }
+    }
+
+    @media (max-width: 420px) {
+      body { padding: 14px; }
+      .meta { grid-template-columns: 1fr; }
+      .topbar { font-size: 9px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app" aria-label="System interface">
+    <header class="topbar">
+      <span>⛧ GEAAZETSU / UI</span>
+      <span class="status">● ONLINE</span>
+      <span id="clock">00:00:00</span>
+    </header>
+
+    <section class="panel">
+      <div class="symbol" aria-hidden="true">⛧</div>
+      <h1>GEAAZETSU</h1>
+      <p class="subtitle">
+        Experimental interface dengan nuansa cyberpunk, efek visual halus,
+        dan tampilan responsif untuk desktop maupun perangkat seluler.
+      </p>
+
+      <div class="divider"></div>
+
+      <div class="meta">
+        <div class="meta-item">
+          <span class="label">DEVICE</span>
+          <span class="value" id="device">Mendeteksi...</span>
+        </div>
+        <div class="meta-item">
+          <span class="label">PLATFORM</span>
+          <span class="value" id="platform">Mendeteksi...</span>
+        </div>
+        <div class="meta-item">
+          <span class="label">DISPLAY</span>
+          <span class="value" id="display">Mendeteksi...</span>
+        </div>
+        <div class="meta-item">
+          <span class="label">LOCAL TIME</span>
+          <span class="value" id="localTime">Mendeteksi...</span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="fullscreenBtn" type="button">Masuk Fullscreen</button>
+        <button id="motionBtn" type="button" aria-pressed="true">Matikan Animasi</button>
+      </div>
+    </section>
+
+    <footer>LOCAL DEMO • TIDAK MENGIRIM DATA KE SERVER</footer>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const $ = (selector) => document.querySelector(selector);
+      const clock = $("#clock");
+      const localTime = $("#localTime");
+      const motionBtn = $("#motionBtn");
+      const fullscreenBtn = $("#fullscreenBtn");
+
+      const updateClock = () => {
+        const now = new Date();
+        const time = now.toLocaleTimeString("id-ID", { hour12: false });
+        clock.textContent = time;
+        localTime.textContent = time;
+      };
+
+      const detectEnvironment = () => {
+        const ua = navigator.userAgent;
+        const mobile = /Android|iPhone|iPad|iPod/i.test(ua);
+
+        $("#device").textContent = mobile ? "Mobile" : "Desktop";
+        $("#platform").textContent = navigator.platform || "Tidak tersedia";
+        $("#display").textContent =
+          `${window.innerWidth} × ${window.innerHeight}px`;
+      };
+
+      fullscreenBtn.addEventListener("click", async () => {
+        try {
+          if (!document.fullscreenElement) {
+            await document.documentElement.requestFullscreen();
+            fullscreenBtn.textContent = "Keluar Fullscreen";
+          } else {
+            await document.exitFullscreen();
+            fullscreenBtn.textContent = "Masuk Fullscreen";
+          }
+        } catch {
+          fullscreenBtn.textContent = "Fullscreen tidak tersedia";
+        }
+      });
+
+      motionBtn.addEventListener("click", () => {
+        const reduced = document.body.classList.toggle("reduce-motion");
+        document.documentElement.style.setProperty(
+          "--motion-state", reduced ? "paused" : "running"
+        );
+        document.querySelectorAll("*").forEach((element) => {
+          element.style.animationPlayState = reduced ? "paused" : "running";
+        });
+        motionBtn.textContent = reduced ? "Aktifkan Animasi" : "Matikan Animasi";
+        motionBtn.setAttribute("aria-pressed", String(!reduced));
+      });
+
+      document.addEventListener("fullscreenchange", () => {
+        fullscreenBtn.textContent =
+          document.fullscreenElement ? "Keluar Fullscreen" : "Masuk Fullscreen";
+      });
+
+      window.addEventListener("resize", detectEnvironment);
+      updateClock();
+      detectEnvironment();
+      setInterval(updateClock, 1000);
+    })();
+  </script>
+</body>
+  </html>
